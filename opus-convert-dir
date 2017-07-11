@@ -4,6 +4,7 @@
 export source=$1
 export bitrate=$2
 export destination=$3
+if [ -z "${4+x}" ]; then export overwrite="-n"; else export overwrite="$4"; fi # to overwrite files set your 4th arg to -y or -n
 
 # if your scripts aren't in your $PATH, but are installed, you can specify locations here
 export reqs=("ffmpeg" "opusenc")
@@ -50,7 +51,7 @@ function convert_opus {
     mkdir -p "$directory"
     echo "$dest"
     #opusenc --bitrate "$bitrate" "$file" "$dest";
-    ffmpeg -i "$file" -acodec libopus -b:a "$bitrate" -vbr on "$dest";
+    ffmpeg -i "$file" -acodec libopus -b:a "$bitrate" -vbr on "$dest" "$overwrite";
 }
 export -f convert_opus # exported so I can use it inside find -exec
 
