@@ -48,6 +48,7 @@ function convert_opus {
     directory="$to_folder/${file%/*}"
 
     mkdir -p "$directory"
+    echo "$dest"
     opusenc --bitrate "$bitrate" "$file" "$dest";
 }
 export -f convert_opus # exported so I can use it inside find -exec
