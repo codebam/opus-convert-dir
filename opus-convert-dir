@@ -6,7 +6,7 @@ export bitrate=$2
 export destination=$3
 
 # if your scripts aren't in your $PATH, but are installed, you can specify locations here
-export reqs=("opusenc")
+export reqs=("ffmpeg" "opusenc")
 
 
 # don't touch anything below this line ----------------------------
@@ -35,7 +35,7 @@ function tests {
 
 function help_ {
     echo "Usage: $0 [source] [bitrate] [dest]"
-    echo "Example: $0 music 160 transcodes"
+    echo "Example: $0 music 160k transcodes"
 }
 
 
@@ -49,7 +49,8 @@ function convert_opus {
 
     mkdir -p "$directory"
     echo "$dest"
-    opusenc --bitrate "$bitrate" "$file" "$dest";
+    #opusenc --bitrate "$bitrate" "$file" "$dest";
+    ffmpeg -i "$file" -acodec libopus -b:a "$bitrate" -vbr on "$dest";
 }
 export -f convert_opus # exported so I can use it inside find -exec
 
