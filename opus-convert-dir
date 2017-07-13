@@ -56,6 +56,15 @@ function convert_opus {
 export -f convert_opus # exported so I can use it inside find -exec
 
 
+function copy_album_art {
+    file=$1
+    to_folder=$2
+    dest="$to_folder/${file%/*}"
+    cp -u "$file" "$dest" # -u means it'll update, and not copy if the file already exists
+}
+export -f copy_album_art
+
+
 function main {
     if [ $# -eq 0 ]
     then
@@ -65,7 +74,8 @@ function main {
     fi
 
     tests;
-    find "$source" -name "*.flac" -exec bash -c 'convert_opus "$1" "$bitrate" "$destination"' _ {} \;
+    find "$source" -name "*.flac" -exec bash -c 'convert_opus "$1" "$bitrate" "$destination"' _ {} \; # do transcodes
+    find "$source" -type f \( -iname \*.jpg -o -iname \*.png  -o -iname \*.jpeg \) -exec bash -c 'copy_album_art "$1" "$destination"' _ {} \; # copy album art
 }
 
 main "$@"
