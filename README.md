@@ -4,8 +4,8 @@ This is a script I wrote to transcode my collection of [FLAC](https://xiph.org/f
 
 The usage is fairly simple, but here's an example:
 
-`opus-convert-dir music-folder 160k output-folder`
+`opus-convert-dir music-folder 160 output-folder`
 
 to update (overwrite) your transcodes, to change the bitrate for example:
 
-`opus-convert-dir music-folder 96k output-folder -y`
+`opus-convert-dir music-folder 128 output-folder -y`

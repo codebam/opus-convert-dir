@@ -36,7 +36,7 @@ function tests {
 
 function help_ {
     echo "Usage: $0 [source] [bitrate] [dest]"
-    echo "Example: $0 music 160k transcodes"
+    echo "Example: $0 music 128 transcodes"
 }
 
 
@@ -49,9 +49,22 @@ function convert_opus {
     directory="$to_folder/${file%/*}"
 
     mkdir -p "$directory"
+
     echo "$dest"
-    #opusenc --bitrate "$bitrate" "$file" "$dest";
-    ffmpeg -i "$file" -acodec libopus -b:a "$bitrate" -vbr on "$dest" "$overwrite";
+    if [ -s "$dest" ]; then
+        if [ "$overwrite" == "-y" ]; then # if the user wants us to overwrite
+            opusenc --bitrate "$bitrate" "$file" "$dest"
+        elif [ "$(file "$dest" | rev | cut -f2 -d' ' | rev)" != "Opus" ] ; then # if it's not an opus file
+            opusenc --bitrate "$bitrate" "$file" "$dest"
+        else
+            echo "$dest exists and is valid."
+        fi
+    else
+        opusenc --bitrate "$bitrate" "$file" "$dest"
+    fi
+
+    #opusenc --bitrate "$bitrate" "$file" "$dest"
+    #ffmpeg -i "$file" -acodec libopus -vn -b:a "$bitrate"k -vbr on "$dest" "$overwrite"
 }
 export -f convert_opus # exported so I can use it inside find -exec
 
@@ -59,7 +72,7 @@ export -f convert_opus # exported so I can use it inside find -exec
 function copy_album_art {
     file=$1
     to_folder=$2
-    dest="$to_folder/${file%/*}"
+    dest="$to_folder/$file"
     cp -u "$file" "$dest" # -u means it'll update, and not copy if the file already exists
 }
 export -f copy_album_art
@@ -74,7 +87,7 @@ function main {
     fi
 
     tests;
-    find "$source" -name "*.flac" -exec bash -c 'convert_opus "$1" "$bitrate" "$destination"' _ {} \; # do transcodes
+    find "$source" -type f -name '*.flac' | parallel -q bash -c 'convert_opus "$@"' _ {} "$bitrate" "$destination" # do transcodes
     find "$source" -type f \( -iname \*.jpg -o -iname \*.png  -o -iname \*.jpeg \) -exec bash -c 'copy_album_art "$1" "$destination"' _ {} \; # copy album art
 }
 
