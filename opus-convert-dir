@@ -7,7 +7,7 @@ export destination=$3
 if [ -z "${4+x}" ]; then export overwrite="-n"; else export overwrite="$4"; fi # to overwrite files set your 4th arg to -y or -n
 
 # if your scripts aren't in your $PATH, but are installed, you can specify locations here
-export reqs=("ffmpeg" "opusenc")
+export reqs=("opusenc")
 
 
 # don't touch anything below this line ----------------------------
